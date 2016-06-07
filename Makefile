@@ -195,7 +195,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
 
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?=arm
-CROSS_COMPILE	?=../PLATFORM/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
+CROSS_COMPILE	?=/opt/arm-linux-androideabi-4.9/bin/arm-eabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -376,12 +376,17 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks \
-		   -fdiagnostics-show-option -Werror
+KBUILD_CFLAGS := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+				-fno-strict-aliasing -fno-common \
+				-Wno-format-security -Wno-unused \
+				-fno-delete-null-pointer-checks \
+				-Wno-maybe-uninitialized \
+				-Wno-sizeof-pointer-memaccess \
+				-Wno-error=unused-parameter -Wno-error=unused-but-set-variable \
+				-fno-exceptions -Wno-multichar -Wno-sequence-point \
+				-fno-delete-null-pointer-checks \
+				-fno-aggressive-loop-optimizations \
+				-std=gnu89
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
@@ -609,6 +614,9 @@ endif
 # Use make W=1 to enable this warning (see scripts/Makefile.build)
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
 
+## Fix GCC 4.9 Scheduler bug
+KBUILD_CFLAGS += $(call cc-option, -fno-var-tracking-assignments)
+
 ifdef CONFIG_FRAME_POINTER
 KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
 else
@@ -678,14 +686,14 @@ endif
 #Disable the whole of the following block to disable LKM AUTH
 ifeq ($(CONFIG_TIMA_LKMAUTH),y)
 ifeq ($(CONFIG_TIMA),y)
-    KBUILD_CFLAGS += -DTIMA_LKM_AUTH_ENABLED -Idrivers/gud/gud-exynos5433/MobiCoreKernelApi/include/
+    KBUILD_CFLAGS += -DTIMA_LKM_AUTH_ENABLED -Idrivers/gud/gud-exynos5422/MobiCoreKernelApi/include/
     KBUILD_AFLAGS += -DTIMA_LKM_AUTH_ENABLED
 endif
 endif
 
 #ICCC
 ifeq ($(CONFIG_TZ_ICCC),y)
-    KBUILD_CFLAGS += -Idrivers/gud/gud-exynos5433/MobiCoreKernelApi/include/
+    KBUILD_CFLAGS += -Idrivers/gud/gud-exynos5422/MobiCoreKernelApi/include/
 endif
 
 # Add user supplied CPPFLAGS, AFLAGS and CFLAGS as the last assignments
