@@ -423,3 +423,7 @@ header-y += x25.h
 header-y += xattr.h
 header-y += xfrm.h
 header-y += hw_breakpoint.h
+#fingerprint driver headers
+header-y += fingerprint.h
+header-y += vfs61xx.h
+
